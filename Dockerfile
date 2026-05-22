@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     postgresql-17 \
     postgresql-17-pgvector \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default
 
 # Install LiteLLM proxy globally
 RUN pip3 install --break-system-packages 'litellm[proxy]'
