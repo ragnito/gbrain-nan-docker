@@ -37,6 +37,17 @@ else
   echo "[entrypoint] Found existing PostgreSQL cluster at $PGDATA"
 fi
 
+# ─── Apply low-memory profile for Docker compatibility ──────────────────
+# Default shared_buffers=128MB + posix dynamic shared memory can exceed
+# Docker's default /dev/shm (64MB), causing PostgreSQL to fail silently.
+echo "[entrypoint] Applying low-memory PostgreSQL profile ..."
+cat >> "$PGDATA/postgresql.conf" <<'PGCONF'
+shared_buffers = 16MB
+dynamic_shared_memory_type = sysv
+max_connections = 25
+work_mem = 1MB
+PGCONF
+
 echo "[entrypoint] Starting PostgreSQL on :5432 ..."
 su - postgres -c "/usr/lib/postgresql/17/bin/pg_ctl -D $PGDATA -l /tmp/pg.log start"
 
